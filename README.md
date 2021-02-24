@@ -1,1 +1,6 @@
 # Stock-Screener
+Allows the user to introduce a list of Tickers and then set the minimum value for parameters in five different categories: Value, Future, Health, Past and Insiders.
+The program will scrape all the necesssary info from the web and evaluate the different categories with a point system. Finally, it will output all the companies that check all the boxes for the established parameters...
+
+Permite al usuario introducir una lista de Tickers y determinar el valor minimo de parametros divididos en 5 categorias: Valor, Futuro, Solidez, Pasado e Insiders.
+El programa recoge todo la informacion necesaria mediante webscraping de diferentes páginas web y evalúa las diferentes categorías usando un sistema de puntuación. Finalmente, habrá un output con los Tickers de todas las empresas que cumplan los parametros establecidos...
