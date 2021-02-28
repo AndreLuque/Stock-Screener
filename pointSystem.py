@@ -54,6 +54,7 @@ def health(DebtEquity:float, LongTermLiabilities:float, NetOperatingCashFlow:flo
 	DebtEquity = float(DebtEquity)
 	if DebtEquity == -1:
 		#to redefinde Debt/Equity Ratio first we must make sure that total equity is not zero so that we dont have an error
+		TotalEquity = float(TotalEquity)
 		if TotalEquity != -1:
 			DebtEquity = (LongTermDebt + ShortTermDebt) / TotalEquity
 	#We check to see if it is correct, redefined or not
@@ -264,7 +265,7 @@ def insiders(InsiderTrans:float, InstitutionTrans:float, pointsEarnedInsiders = 
 	return pointsEarnedInsiders, TotalpointsInsiders
 
 
-def value(PE:float, PEG:float, PS:float, PB:float, YearHighPercent:float, EBITDA:float, LongTermDebt:float, ShortTermDebt:float, FreeCashFlow:float, MarketCap:float, pointsEarnedValue = 0, TotalpointsValue = 0) -> float:
+def value(PE:float, PEG:float, PS:float, PB:float, YearHighPercent:float, EBITDA:float, LongTermDebt:float, ShortTermDebt:float, FreeCashFlow:float, MarketCap:float, NetIncome:float, pointsEarnedValue = 0, TotalpointsValue = 0) -> float:
 	#We measure differrent values and see if it meets the established parameters, adding points in affirmative cases
 	#3 points if PE ratio is under 20 and another 2 if it is under 15
 	PE = float(PE)
@@ -274,6 +275,10 @@ def value(PE:float, PEG:float, PS:float, PB:float, YearHighPercent:float, EBITDA
 		if PE <= 15:
 			pointsEarnedValue += 2
 		TotalpointsValue += 5
+	else:
+		if NetIncome != []:
+			if NetIncome[-1] < 0:
+				TotalpointsValue += 5	
 
 	#3 points if PEG ratio is under 1.3 and another 2 if it is under 1
 	PEG = float(PEG)
