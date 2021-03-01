@@ -184,17 +184,18 @@ def future(EPSNextY:float, EPSNext5Y:float, estimateRevision1:float, estimateRev
 		TotalpointsFuture += 5
 
 	#we need to know how many votes of each recommendation there is
-	numBuy = sumList(Buy)
-	numOverweight = sumList(Overweight)
-	numHold = sumList(Hold)
-	numUnderweight = sumList(Underweight)
-	numSell = sumList(Sell)
-	#2 points if total of buy and overweight is bigger than the rest, 3 points if it is bigger than 1.5 times the rest
-	if numBuy + numOverweight >= numHold + numSell + numUnderweight:
-		pointsEarnedFuture += 2
-	if numBuy + numOverweight > 1.5 * (numHold + numSell + numUnderweight):
-		pointsEarnedFuture += 3
-	TotalpointsFuture += 5
+	if len(Buy) + len(Overweight) + len(Hold) + len(Underweight) + len(Sell) >= 1:
+		numBuy = sumList(Buy)
+		numOverweight = sumList(Overweight)
+		numHold = sumList(Hold)
+		numUnderweight = sumList(Underweight)
+		numSell = sumList(Sell)
+		#2 points if total of buy and overweight is bigger than the rest, 3 points if it is bigger than 1.5 times the rest
+		if numBuy + numOverweight >= numHold + numSell + numUnderweight:
+			pointsEarnedFuture += 2
+		if numBuy + numOverweight > 1.5 * (numHold + numSell + numUnderweight):
+			pointsEarnedFuture += 3
+		TotalpointsFuture += 5
 
 	return pointsEarnedFuture, TotalpointsFuture
 
