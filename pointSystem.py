@@ -68,10 +68,13 @@ def health(DebtEquity:float, LongTermLiabilities:float, NetOperatingCashFlow:flo
 	#3 Points if EBIT covers 33% of Interest Expense
 	if EBIT != -1:
 		#Calculate ratio
-		RatioLE = InterestExpense / EBIT
-		if RatioLE <= 0.33:
-			pointsEarnedHealth += 2
-		TotalpointsHealth += 2
+		if EBIT != 0:
+			RatioLE = InterestExpense / EBIT
+			if RatioLE <= 0.33:
+				pointsEarnedHealth += 2
+			TotalpointsHealth += 2
+		else:
+			TotalpointsHealth += 2	
 
 	#3 points if free cash flow covers half of total liabilities and 2 points if it covers all if it
 	if NetOperatingCashFlow != -1 and LongTermDebt != -1:

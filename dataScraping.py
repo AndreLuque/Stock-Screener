@@ -152,7 +152,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
             # We must change the values from billions and millions to full numbers
         
         for i in range(len(RevenuePast5t)):
-            if RevenuePast5t[i] != '-':   
+            if RevenuePast5t[i] != '-':
+                if RevenuePast5t[i][0] == '(':
+                    RevenuePast5t[i] = '-' + RevenuePast5t[i][1:-1]  
                 if RevenuePast5t[i][-1] == 'B':
                     RevenuePast5 += [float(RevenuePast5t[i][0:-1]) * 1000000000]
                 elif RevenuePast5t[i][-1] == 'M':
@@ -223,6 +225,8 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                 len(IncomeStatement.columns) - 2]
             DepreciationAmortization = DepreciationAmortization[int(
                 DepreciationAmortization.index.values)]  # We dont know what position it is in so we find out and take only that specific value
+            if DepreciationAmortization[0] == '(':
+                DepreciationAmortization = '-' + DepreciationAmortization[1:-1]
             if DepreciationAmortization[-1] == 'B':
                 DepreciationAmortization = float(DepreciationAmortization[0:-1]) * 1000000000
             elif DepreciationAmortization[-1] == 'M':
@@ -246,12 +250,20 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                     # The negative values for this in the website appear with a parentesis before it, so we must correct that
                     if EPS[int(EPS.index.values)][0] == '(':
                         if EPS[int(EPS.index.values)][-2] == 'K':
-                            EPSpast5 += [-1 * (float(EPS[int(EPS.index.values)][1:-2]))]
+                            EPSpast5 += [-1000 * (float(EPS[int(EPS.index.values)][1:-2]))]
+                        elif EPS[int(EPS.index.values)][-2] == 'M':
+                            EPSpast5 += [-1000000 * (float(EPS[int(EPS.index.values)][1:-2]))]     
+                        elif EPS[int(EPS.index.values)][-2] == 'B':
+                            EPSpast5 += [-1000000000 * (float(EPS[int(EPS.index.values)][1:-2]))]          
                         else:    
                             EPSpast5 += [-1 * (float(EPS[int(EPS.index.values)][1:-1]))]
                     else:
                         if EPS[int(EPS.index.values)][-1] == 'K':
-                            EPSpast5 += [float(EPS[int(EPS.index.values)][0:-1])]
+                            EPSpast5 += [1000 * float(EPS[int(EPS.index.values)][0:-1])]
+                        elif EPS[int(EPS.index.values)][-1] == 'M':
+                            EPSpast5 += [1000000 * float(EPS[int(EPS.index.values)][0:-1])]   
+                        elif EPS[int(EPS.index.values)][-1] == 'B':
+                            EPSpast5 += [1000000000 * (float(EPS[int(EPS.index.values)][0:-1]))]        
                         else:    
                             EPSpast5 += [float(EPS[int(EPS.index.values)])]
 
@@ -344,11 +356,12 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
     check = True
     try:
         BalanceSheet = pd.read_html(str(soup), attrs={'class': 'table table--overflow align--right'})
+        Assets = BalanceSheet[0]
+        Liabilities = BalanceSheet[1]
     except:
         check = False
     
     if check:    
-        Assets = BalanceSheet[0]
         Assets.columns = pd.RangeIndex(0, len(
             Assets.columns))  # Indexing the columns as numbers so that the differences in the name of columns wont matter
 
@@ -396,7 +409,6 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
 
         ###################################################################################################################################
 
-        Liabilities = BalanceSheet[1]
         Liabilities.columns = pd.RangeIndex(0, len(
             Liabilities.columns))  # Indexing the columns as numbers so that the differences in the name of columns wont matter
 
@@ -429,6 +441,8 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
             TotalLiabilities = TotalLiabilities[int(
                 TotalLiabilities.index.values)]  # We dont know what position it is in so we find out and take only that specific value
             # Some companies have liabilities in the trillions so we must convert it
+            if TotalLiabilities[0] == '(':
+                TotalLiabilities = '-' + TotalLiabilities[1:-1]
             if TotalLiabilities[-1] == 'T':
                 TotalLiabilities = float(TotalLiabilities[0:-1]) * 1000000000000
             elif TotalLiabilities[-1] == 'B':
@@ -562,11 +576,13 @@ def CashFlow(soup, FreeCashFlow = -1, TotalDebtReduction = -1, NetOperatingCashF
     check = True
     try:
         CashFlow = pd.read_html(str(soup), attrs={'class': 'table table--overflow align--right'})
+        OperatingActivities = CashFlow[0]
+        InvestingActivities = CashFlow[1]
+        FinancingActivities = CashFlow[2]
     except:
         check = False
 
     if check:    
-        OperatingActivities = CashFlow[0]
         OperatingActivities.columns = pd.RangeIndex(0, len(
             OperatingActivities.columns))  # Indexing the columns as numbers so that the differences in the name of columns wont matter
 
@@ -593,11 +609,9 @@ def CashFlow(soup, FreeCashFlow = -1, TotalDebtReduction = -1, NetOperatingCashF
         else:
             NetOperatingCashFlow = -1
 
-        InvestingActivities = CashFlow[1]
         InvestingActivities.columns = pd.RangeIndex(0, len(
             InvestingActivities.columns))  # Indexing the columns as numbers so that the differences in the name of columns wont matter
 
-        FinancingActivities = CashFlow[2]
         FinancingActivities.columns = pd.RangeIndex(0, len(
             FinancingActivities.columns))  # Indexing the columns as numbers so that the differences in the name of columns wont matter
 
@@ -659,12 +673,14 @@ def EPSRevisions(soup, estimateRevision1 = -1, estimateRevision2 = -1) -> float:
     # estimates is broken down in four different parts and we want the last two
     check = True
     try:
-        estimates = pd.read_html(str(soup), attrs={'class': 'table value-pairs no-heading font--lato'})
+        # EPS estimate for next year revisions from 3 months ago 1 month ago and current
+        firstYear = pd.read_html(str(soup), attrs={'class': 'table value-pairs no-heading font--lato'})[2]  
+        # EPS estimate for the year after next year revisions from 3 months ago 1 month ago and current
+        secondYear = pd.read_html(str(soup), attrs={'class': 'table value-pairs no-heading font--lato'})[3]  
     except:
         check = False
 
     if check:        
-        firstYear = estimates[2]  # EPS estimate for next year revisions from 3 months ago 1 month ago and current
         estimateRevision1 = 0
         for i in range(2, 0, -1):
             # We calculate the percentage change from one year to another and then average them out
@@ -687,8 +703,6 @@ def EPSRevisions(soup, estimateRevision1 = -1, estimateRevision2 = -1) -> float:
             except:
                 None
 
-        secondYear = estimates[
-            3]  # EPS estimate for the year after next year revisions from 3 months ago 1 month ago and current
         estimateRevision2 = 0
         for i in range(2, 0, -1):
             # We calculate the percentage change from one year to another and then average them out
