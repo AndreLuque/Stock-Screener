@@ -8,13 +8,7 @@
 
 #The objective of this code is to check the scores for all stock tickers in the Nasdaq, AMEX and NYSE and update there scores in the five categories to the database
 
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-from openpyxl import load_workbook
 from typing import List
-from dataScraping import *
-from pointSystem import *
 
 def enterScore(category:str, correct = False, score = -1) -> float:	
 	#function to see if the values introduced are correct, so no errors are produced

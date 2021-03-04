@@ -79,14 +79,18 @@ def health(DebtEquity:float, LongTermLiabilities:float, NetOperatingCashFlow:flo
 	#3 points if free cash flow covers half of total liabilities and 2 points if it covers all if it
 	if NetOperatingCashFlow != -1 and LongTermDebt != -1:
 		#Calculate ratio
-		RatioFD = NetOperatingCashFlow / (LongTermDebt + ShortTermDebt)
-		if RatioFD >= 1:
+		if LongTermDebt + ShortTermDebt != 0:
+			RatioFD = NetOperatingCashFlow / (LongTermDebt + ShortTermDebt)
+			if RatioFD >= 1:
+				pointsEarnedHealth += 5
+			elif 0.5 <= RatioFD < 1:
+				pointsEarnedHealth += 3
+			elif 0.25 <= RatioFD < 0.5:
+				pointsEarnedHealth += 1
+			TotalpointsHealth += 5
+		else:
 			pointsEarnedHealth += 5
-		elif 0.5 <= RatioFD < 1:
-			pointsEarnedHealth += 3
-		elif 0.25 <= RatioFD < 0.5:
-			pointsEarnedHealth += 1
-		TotalpointsHealth += 5
+			TotalpointsHealth += 5	
 
 	if TotalCurrentAssets != -1 and TotalCurrentLiabilities != -1:
 		#Calculate Ratio

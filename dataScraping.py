@@ -155,7 +155,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
             if RevenuePast5t[i] != '-':
                 if RevenuePast5t[i][0] == '(':
                     RevenuePast5t[i] = '-' + RevenuePast5t[i][1:-1]  
-                if RevenuePast5t[i][-1] == 'B':
+                if RevenuePast5t[i][-1] == 'T':
+                    RevenuePast5 += [float(RevenuePast5t[i][0:-1]) * 1000000000000]    
+                elif RevenuePast5t[i][-1] == 'B':
                     RevenuePast5 += [float(RevenuePast5t[i][0:-1]) * 1000000000]
                 elif RevenuePast5t[i][-1] == 'M':
                     RevenuePast5 += [float(RevenuePast5t[i][0:-1]) * 1000000]
@@ -181,7 +183,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                     NetIncome.index.values)]  # We dont know what position it is in so we find out and take only that specific value
                 if NetIncome[0] == '(':
                     NetIncome = '-' + NetIncome[1:-1]
-                if NetIncome[-1] == 'B':
+                if NetIncome[-1] == 'T':
+                    NetIncome = float(NetIncome[0:-1]) * 1000000000000
+                elif NetIncome[-1] == 'B':
                     NetIncome = float(NetIncome[0:-1]) * 1000000000
                 elif NetIncome[-1] == 'M':
                     NetIncome = float(NetIncome[0:-1]) * 1000000
@@ -203,7 +207,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                 EBITDA.index.values)]  # We dont know what position it is in so we find out and take only that specific value
             if EBITDA[0] == '(':
                 EBITDA = '-' + EBITDA[1:-1]
-            if EBITDA[-1] == 'B':
+            if EBITDA[-1] == 'T':
+                EBITDA = float(EBITDA[0:-1]) * 1000000000000
+            elif EBITDA[-1] == 'B':
                 EBITDA = float(EBITDA[0:-1]) * 1000000000
             elif EBITDA[-1] == 'M':
                 EBITDA = float(EBITDA[0:-1]) * 1000000
@@ -484,7 +490,7 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
             for i in range(1, len(Liabilities.columns) - 1):
                 DA = Liabilities.loc[Liabilities[0] == 'Total Debt / Total Assets Total Debt / Total Assets'][i]
                 if DA[int(DA.index.values)] != '-':
-                    RatioDA += [float(DA[int(DA.index.values)][0:-1])]
+                    RatioDA += [float((DA[int(DA.index.values)].replace(',', ''))[0:-1])]
         # Now we calculate the growth of this ratio year over year
         GrowthDA = 0
         if len(RatioDA) != 0:
@@ -525,6 +531,8 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
                 len(Liabilities.columns) - 2]
             ShortTermDebt = ShortTermDebt[int(
                 ShortTermDebt.index.values)]  # We dont know what position it is in so we find out and take only that specific value
+            if ShortTermDebt[0] == '(':
+                ShortTermDebt = '-' +  ShortTermDebt[1:-1]
             if ShortTermDebt[-1] == 'B':
                 ShortTermDebt = float(ShortTermDebt[0:-1]) * 1000000000
             elif ShortTermDebt[-1] == 'M':
@@ -544,6 +552,8 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
             LongTermDebt = Liabilities.loc[Liabilities[0] == 'Long-Term Debt Long-Term Debt'][len(Liabilities.columns) - 2]
             LongTermDebt = LongTermDebt[int(
                 LongTermDebt.index.values)]  # We dont know what position it is in so we find out and take only that specific value
+            if LongTermDebt[0] == '(':
+                LongTermDebt = '-' +  LongTermDebt[1:-1]
             if LongTermDebt[-1] == 'B':
                 LongTermDebt = float(LongTermDebt[0:-1]) * 1000000000
             elif LongTermDebt[-1] == 'M':
@@ -738,7 +748,7 @@ def PriceTargets(soup, HighTarget = -1, LowTarget = -1, AverageTarget = -1, Numb
     except:
         check = False
 
-    if check:        
+    if check:       
         priceTargets = estimates[1]
         # We initialize the variables
         HighTarget = -1
