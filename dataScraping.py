@@ -511,6 +511,8 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
                 TotalEquity.index.values)]  # We dont know what position it is in so we find out and take only that specific value
             if TotalEquity[0] == '(':
                 TotalEquity = '-' + TotalEquity[1:-1]
+            if TotalEquity[-1] == 'T':
+                TotalEquity = float(TotalEquity[0:-1]) * 1000000000000
             if TotalEquity[-1] == 'B':
                 TotalEquity = float(TotalEquity[0:-1]) * 1000000000
             elif TotalEquity[-1] == 'M':

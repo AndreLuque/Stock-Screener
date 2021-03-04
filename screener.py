@@ -9,6 +9,7 @@
 #The objective of this code is to check the scores for all stock tickers in the Nasdaq, AMEX and NYSE and update there scores in the five categories to the database
 
 from typing import List
+import pandas as pd
 
 def enterScore(category:str, correct = False, score = -1) -> float:	
 	#function to see if the values introduced are correct, so no errors are produced
@@ -23,9 +24,37 @@ def enterScore(category:str, correct = False, score = -1) -> float:
 			print('Incorrect Value Entered... Try Again...')
 			correct = False
 
-	return score	
+	return score
+
+def minValue(name:str, value = 0, correct = False, option = '') -> float:
+	#ask the user if he they want to set a minimum volume quantity
+	while option != 'Yes' and option != 'No':
+		option = str(input(f'Would you like to enter a minimum {name}? (Yes/No): '))
+
+	#if the user want to we make sure that they enter a volume that is a natural number	
+	if option == 'Yes':	
+		while value <= 0:
+			value = int(input(f'Enter the minimum Volume: '))
+	else:
+		value = 0
+
+	return value	
+
+def dollarSign(x:str) -> float:
+	return float(x[1:])
+
 
 def main ():
+
+	#get the dataframes for all tickers of nasdaq amex and nyse
+	NasdaqDF = pd.read_excel('Nasdaq.xlsx')
+	AmexDF = pd.read_excel('AMEX.xlsx')
+	NyseDF = pd.read_excel('NYSE.xlsx')
+
+	#changing the prices to floats without the dollar sign
+	NasdaqDF['Last Sale'] = NasdaqDF['Last Sale'].apply(dollarSign)
+	AmexDF['Last Sale'] = AmexDF['Last Sale'].apply(dollarSign)
+	NyseDF['Last Sale'] = NyseDF['Last Sale'].apply(dollarSign)
 
 	#find the numbers that the user wants for each approved ticker
 	ValueScore = enterScore('Value')
@@ -34,40 +63,44 @@ def main ():
 	PastScore = enterScore('Past')
 	InsiderScore = enterScore('Insider')
 
-	approvedTickers = []
-	
-			
-			#if anyone of the parameters is not met we discard the ticker and dont check the rest of the parameters
-			check = True
-			print(Value)
-			print(pointsEarnedValue, TotalpointsValue)
-			if (Value < ValueScore or TotalpointsValue < 10) and check:
-				check = False
-			if Past < PastScore and check:
-				check = False
-			if Future < FutureScore and check:
-				check = False
-			if Health < HealthScore and check:
-				check = False
-			if Insiders < InsiderScore and check:
-				check = False		
-
-			#if it is approved we add it to the last and tell the user that it has been approved 	
-			if check:
-				print(f'{Ticker.upper()} APPROVED')
-				approvedTickers += [Ticker]
-			else:
-				print(f'{Ticker.upper()} FAILED')	
+	print()
+	Volume = minValue('Volume')
 
 	print()
-	#finally we show the list of approved tickers or if there arent any			
-	if len(approvedTickers) != 0:
-		print('APPROVED TICKERS: ')
-		for Ticker in approvedTickers:
-			print(Ticker.upper()) 
-	else:
-		print('NO APPROVED TICKERS')			
+	MarketCap = minValue('Market Cap')
 
+	print()
+	Price = minValue('Price')
+
+	print()
+	print()
+
+	#Turn the values in the columns to numeric so that we can compare them
+	NasdaqDF['Value'] = pd.to_numeric(NasdaqDF['Value'], errors = 'coerce')
+	NasdaqDF['Past'] = pd.to_numeric(NasdaqDF['Past'], errors = 'coerce')
+	NasdaqDF['Future'] = pd.to_numeric(NasdaqDF['Future'], errors = 'coerce')
+	NasdaqDF['Health'] = pd.to_numeric(NasdaqDF['Health'], errors = 'coerce')
+	NasdaqDF['Insiders'] = pd.to_numeric(NasdaqDF['Insiders'], errors = 'coerce')
+		
+	#we search for tickers that pass the parameter values set by the user	
+	approvedDF = NasdaqDF.loc[(NasdaqDF['Value'] >= ValueScore) & (NasdaqDF['Future'] >= FutureScore) & (NasdaqDF['Past'] >= PastScore) & (NasdaqDF['Health'] >= HealthScore) & (NasdaqDF['Insiders'] >= InsiderScore) & (NasdaqDF['Volume'] >= Volume) & (NasdaqDF['Market Cap'] >= MarketCap) & (NasdaqDF['Last Sale'] >= Price)]	
+	
+	#we delete columns with irrelevant info to visualize to approved tickers better
+	del approvedDF['Net Change'], approvedDF['IPO Year'], approvedDF['Industry'], approvedDF['Sector'], approvedDF['Name']
+
+	#we format the dataframe, so that we are able to visualize all the columns and row
+	pd.set_option('display.max_columns', None, 'display.max_rows', None)
+	pd.set_option('display.width', None)
+	#pd.set_option('display.max_colwidth', -1)
+
+	#shows the dataframe of the approved tickers
+	print(approvedDF)
+	
+	#shows a final list of the approved tickers
+	print()
+	print()
+	approvedTickers = list(approvedDF['Symbol'])
+	print(f'List of Approved Tickers: {approvedTickers}')
 
 
 
