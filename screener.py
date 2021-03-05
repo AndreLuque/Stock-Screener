@@ -29,12 +29,18 @@ def enterScore(category:str, correct = False, score = -1) -> float:
 def minValue(name:str, value = 0, correct = False, option = '') -> float:
 	#ask the user if he they want to set a minimum volume quantity
 	while option != 'Yes' and option != 'No':
-		option = str(input(f'Would you like to enter a minimum {name}? (Yes/No): '))
+		try:
+			option = str(input(f'Would you like to enter a minimum {name}? (Yes/No): '))
+		except:
+			None
 
 	#if the user want to we make sure that they enter a volume that is a natural number	
 	if option == 'Yes':	
 		while value <= 0:
-			value = int(input(f'Enter the minimum Volume: '))
+			try:
+				value = int(input(f'Enter the minimum {name}: '))
+			except:
+				None	
 	else:
 		value = 0
 
@@ -56,6 +62,11 @@ def main ():
 	AmexDF['Last Sale'] = AmexDF['Last Sale'].apply(dollarSign)
 	NyseDF['Last Sale'] = NyseDF['Last Sale'].apply(dollarSign)
 
+	#we unite the different dataframes and then we reindex the whole dataframe rows
+	dfs = [NasdaqDF, AmexDF, NyseDF]
+	TickersDF = pd.concat(dfs)
+	TickersDF.reset_index(drop = True, inplace = True)
+
 	#find the numbers that the user wants for each approved ticker
 	ValueScore = enterScore('Value')
 	FutureScore = enterScore('Future')
@@ -76,30 +87,31 @@ def main ():
 	print()
 
 	#Turn the values in the columns to numeric so that we can compare them
-	NasdaqDF['Value'] = pd.to_numeric(NasdaqDF['Value'], errors = 'coerce')
-	NasdaqDF['Past'] = pd.to_numeric(NasdaqDF['Past'], errors = 'coerce')
-	NasdaqDF['Future'] = pd.to_numeric(NasdaqDF['Future'], errors = 'coerce')
-	NasdaqDF['Health'] = pd.to_numeric(NasdaqDF['Health'], errors = 'coerce')
-	NasdaqDF['Insiders'] = pd.to_numeric(NasdaqDF['Insiders'], errors = 'coerce')
+	TickersDF['Value'] = pd.to_numeric(TickersDF['Value'], errors = 'coerce')
+	TickersDF['Past'] = pd.to_numeric(TickersDF['Past'], errors = 'coerce')
+	TickersDF['Future'] = pd.to_numeric(TickersDF['Future'], errors = 'coerce')
+	TickersDF['Health'] = pd.to_numeric(TickersDF['Health'], errors = 'coerce')
+	TickersDF['Insiders'] = pd.to_numeric(TickersDF['Insiders'], errors = 'coerce')
 		
 	#we search for tickers that pass the parameter values set by the user	
-	approvedDF = NasdaqDF.loc[(NasdaqDF['Value'] >= ValueScore) & (NasdaqDF['Future'] >= FutureScore) & (NasdaqDF['Past'] >= PastScore) & (NasdaqDF['Health'] >= HealthScore) & (NasdaqDF['Insiders'] >= InsiderScore) & (NasdaqDF['Volume'] >= Volume) & (NasdaqDF['Market Cap'] >= MarketCap) & (NasdaqDF['Last Sale'] >= Price)]	
-	
-	#we delete columns with irrelevant info to visualize to approved tickers better
-	del approvedDF['Net Change'], approvedDF['IPO Year'], approvedDF['Industry'], approvedDF['Sector'], approvedDF['Name']
+	approvedDF = TickersDF.loc[(TickersDF['Value'] >= ValueScore) & (TickersDF['Future'] >= FutureScore) & (TickersDF['Past'] >= PastScore) & (TickersDF['Health'] >= HealthScore) & (TickersDF['Insiders'] >= InsiderScore) & (TickersDF['Volume'] >= Volume) & (TickersDF['Market Cap'] >= MarketCap) & (TickersDF['Last Sale'] >= Price)]	
 
 	#we format the dataframe, so that we are able to visualize all the columns and row
 	pd.set_option('display.max_columns', None, 'display.max_rows', None)
 	pd.set_option('display.width', None)
 	#pd.set_option('display.max_colwidth', -1)
+	
+	#shows a final list of the approved tickers
+	approvedTickers = list(approvedDF['Name'])
+
+	#we delete columns with irrelevant info to visualize to approved tickers better
+	del approvedDF['Net Change'], approvedDF['IPO Year'], approvedDF['Industry'], approvedDF['Sector'], approvedDF['% Change'], approvedDF['Name']
 
 	#shows the dataframe of the approved tickers
 	print(approvedDF)
-	
-	#shows a final list of the approved tickers
+
 	print()
 	print()
-	approvedTickers = list(approvedDF['Symbol'])
 	print(f'List of Approved Tickers: {approvedTickers}')
 
 

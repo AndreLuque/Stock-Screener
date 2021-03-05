@@ -426,7 +426,11 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
                     len(Liabilities.columns) - 2]
             TotalCurrentLiabilities = TotalCurrentLiabilities[int(
                 TotalCurrentLiabilities.index.values)]  # We dont know what position it is in so we find out and take only that specific value
-            if TotalCurrentLiabilities[-1] == 'B':
+            if TotalCurrentLiabilities[0] == '(':
+                TotalCurrentLiabilities = '-' + TotalCurrentLiabilities[1:-1]
+            if TotalCurrentLiabilities[-1] == 'T':
+                TotalCurrentLiabilities = float(TotalCurrentLiabilities[0:-1]) * 1000000000000
+            elif TotalCurrentLiabilities[-1] == 'B':
                 TotalCurrentLiabilities = float(TotalCurrentLiabilities[0:-1]) * 1000000000
             elif TotalCurrentLiabilities[-1] == 'M':
                 TotalCurrentLiabilities = float(TotalCurrentLiabilities[0:-1]) * 1000000
@@ -513,7 +517,7 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
                 TotalEquity = '-' + TotalEquity[1:-1]
             if TotalEquity[-1] == 'T':
                 TotalEquity = float(TotalEquity[0:-1]) * 1000000000000
-            if TotalEquity[-1] == 'B':
+            elif TotalEquity[-1] == 'B':
                 TotalEquity = float(TotalEquity[0:-1]) * 1000000000
             elif TotalEquity[-1] == 'M':
                 TotalEquity = float(TotalEquity[0:-1]) * 1000000
@@ -535,7 +539,9 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
                 ShortTermDebt.index.values)]  # We dont know what position it is in so we find out and take only that specific value
             if ShortTermDebt[0] == '(':
                 ShortTermDebt = '-' +  ShortTermDebt[1:-1]
-            if ShortTermDebt[-1] == 'B':
+            if ShortTermDebt[-1] == 'T':
+                ShortTermDebt = float(ShortTermDebt[0:-1]) * 1000000000000     
+            elif ShortTermDebt[-1] == 'B':
                 ShortTermDebt = float(ShortTermDebt[0:-1]) * 1000000000
             elif ShortTermDebt[-1] == 'M':
                 ShortTermDebt = float(ShortTermDebt[0:-1]) * 1000000
@@ -556,7 +562,9 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
                 LongTermDebt.index.values)]  # We dont know what position it is in so we find out and take only that specific value
             if LongTermDebt[0] == '(':
                 LongTermDebt = '-' +  LongTermDebt[1:-1]
-            if LongTermDebt[-1] == 'B':
+            if LongTermDebt[-1] == 'T':
+                LongTermDebt = float(LongTermDebt[0:-1]) * 1000000000000         
+            elif LongTermDebt[-1] == 'B':
                 LongTermDebt = float(LongTermDebt[0:-1]) * 1000000000
             elif LongTermDebt[-1] == 'M':
                 LongTermDebt = float(LongTermDebt[0:-1]) * 1000000
@@ -608,7 +616,9 @@ def CashFlow(soup, FreeCashFlow = -1, TotalDebtReduction = -1, NetOperatingCashF
             # Since negative values come with parentesis , we check for those and then remove them
             if NetOperatingCashFlow[0] == '(':
                 NetOperatingCashFlow = '-' + NetOperatingCashFlow[1:-1]  # We dont know what position it is in so we find out and take only that specific value
-            if NetOperatingCashFlow[-1] == 'B':
+            if NetOperatingCashFlow[-1] == 'T':
+                NetOperatingCashFlow = float(NetOperatingCashFlow[0:-1]) * 1000000000000 
+            elif NetOperatingCashFlow[-1] == 'B':
                 NetOperatingCashFlow = float(NetOperatingCashFlow[0:-1]) * 1000000000
             elif NetOperatingCashFlow[-1] == 'M':
                 NetOperatingCashFlow = float(NetOperatingCashFlow[0:-1]) * 1000000
@@ -640,7 +650,9 @@ def CashFlow(soup, FreeCashFlow = -1, TotalDebtReduction = -1, NetOperatingCashF
                 # Since negative values come with parentesis , we check for those and then remove them
                 if DebtReduction[0] == '(':
                     DebtReduction = '-' + DebtReduction[1:-1]  # We dont know what position it is in so we find out and take only that specific value
-                if DebtReduction[-1] == 'B':
+                if DebtReduction[-1] == 'T':
+                    DebtReduction = float(DebtReduction[0:-1]) * 1000000000000 
+                elif DebtReduction[-1] == 'B':
                     DebtReduction = float(DebtReduction[0:-1]) * 1000000000
                 elif DebtReduction[-1] == 'M':
                     DebtReduction = float(DebtReduction[0:-1]) * 1000000
@@ -663,7 +675,9 @@ def CashFlow(soup, FreeCashFlow = -1, TotalDebtReduction = -1, NetOperatingCashF
             # Since negative values come with parentesis , we check for those and then remove them
             if FreeCashFlow[0] == '(':
                 FreeCashFlow = '-' + FreeCashFlow[1:-1]  # We dont know what position it is in so we find out and take only that specific value
-            if FreeCashFlow[-1] == 'B':
+            if FreeCashFlow[-1] == 'T':
+                FreeCashFlow = float(FreeCashFlow[0:-1]) * 1000000000000 
+            elif FreeCashFlow[-1] == 'B':
                 FreeCashFlow = float(FreeCashFlow[0:-1]) * 1000000000
             elif FreeCashFlow[-1] == 'M':
                 FreeCashFlow = float(FreeCashFlow[0:-1]) * 1000000
