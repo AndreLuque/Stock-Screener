@@ -233,7 +233,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                 DepreciationAmortization.index.values)]  # We dont know what position it is in so we find out and take only that specific value
             if DepreciationAmortization[0] == '(':
                 DepreciationAmortization = '-' + DepreciationAmortization[1:-1]
-            if DepreciationAmortization[-1] == 'B':
+            if DepreciationAmortization[-1] == 'T':
+                DepreciationAmortization = float(DepreciationAmortization[0:-1]) * 1000000000000
+            elif DepreciationAmortization[-1] == 'B':
                 DepreciationAmortization = float(DepreciationAmortization[0:-1]) * 1000000000
             elif DepreciationAmortization[-1] == 'M':
                 DepreciationAmortization = float(DepreciationAmortization[0:-1]) * 1000000
@@ -300,7 +302,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                     EBIT.index.values)]  # We dont know what position it is in so we find out and take only that specific value
                 if EBIT[0] == '(':
                     EBIT = '-' + EBIT[1:-1]
-                if EBIT[-1] == 'B':
+                if EBIT[-1] == 'T':
+                    EBIT = float(EBIT[0:-1]) * 1000000000000    
+                elif EBIT[-1] == 'B':
                     EBIT = float(EBIT[0:-1]) * 1000000000
                 elif EBIT[-1] == 'M':
                     EBIT = float(EBIT[0:-1]) * 1000000
@@ -320,7 +324,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                 len(IncomeStatement.columns) - 2]
             InterestExpense = InterestExpense[int(
                 InterestExpense.index.values)]  # We dont know what position it is in so we find out and take only that specific value
-            if InterestExpense[-1] == 'B':
+            if InterestExpense[-1] == 'T':
+                InterestExpense = float(InterestExpense[0:-1]) * 1000000000000
+            elif InterestExpense[-1] == 'B':
                 InterestExpense = float(InterestExpense[0:-1]) * 1000000000
             elif InterestExpense[-1] == 'M':
                 InterestExpense = float(InterestExpense[0:-1]) * 1000000
@@ -339,7 +345,9 @@ def IncomeStatementMW(soup, RevenuePast5 = [], RevenueGrowthPast5 = -1, EBITDA =
                     len(IncomeStatement.columns) - 2]
                 InterestExpense = InterestExpense[int(
                     InterestExpense.index.values)]  # We dont know what position it is in so we find out and take only that specific value
-                if InterestExpense[-1] == 'B':
+                if InterestExpense[-1] == 'T':
+                    InterestExpense = float(InterestExpense[0:-1]) * 1000000000000
+                elif InterestExpense[-1] == 'B':
                     InterestExpense = float(InterestExpense[0:-1]) * 1000000000
                 elif InterestExpense[-1] == 'M':
                     InterestExpense = float(InterestExpense[0:-1]) * 1000000
@@ -400,7 +408,11 @@ def BalanceSheet(soup, TotalEquity = -1, GrowthLA = -1, GrowthDA = -1, TotalLiab
                 len(Assets.columns) - 2]
             TotalCurrentAssets = TotalCurrentAssets[int(
                 TotalCurrentAssets.index.values)]  # We dont know what position it is in so we find out and take only that specific value
-            if TotalCurrentAssets[-1] == 'B':
+            if TotalCurrentAssets[0] == '(':
+                TotalCurrentAssets = '-' + TotalCurrentAssets[1:-1]
+            if TotalCurrentAssets[-1] == 'T':
+                TotalCurrentAssets = float(TotalCurrentAssets[0:-1]) * 1000000000000
+            elif TotalCurrentAssets[-1] == 'B':
                 TotalCurrentAssets = float(TotalCurrentAssets[0:-1]) * 1000000000
             elif TotalCurrentAssets[-1] == 'M':
                 TotalCurrentAssets = float(TotalCurrentAssets[0:-1]) * 1000000
