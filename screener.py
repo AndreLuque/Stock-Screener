@@ -53,19 +53,10 @@ def dollarSign(x:str) -> float:
 def main ():
 
 	#get the dataframes for all tickers of nasdaq amex and nyse
-	NasdaqDF = pd.read_excel('Nasdaq.xlsx')
-	AmexDF = pd.read_excel('AMEX.xlsx')
-	NyseDF = pd.read_excel('NYSE.xlsx')
+	TickersDF = pd.read_excel('Tickers.xlsx')
 
 	#changing the prices to floats without the dollar sign
-	NasdaqDF['Last Sale'] = NasdaqDF['Last Sale'].apply(dollarSign)
-	AmexDF['Last Sale'] = AmexDF['Last Sale'].apply(dollarSign)
-	NyseDF['Last Sale'] = NyseDF['Last Sale'].apply(dollarSign)
-
-	#we unite the different dataframes and then we reindex the whole dataframe rows
-	dfs = [NasdaqDF, AmexDF, NyseDF]
-	TickersDF = pd.concat(dfs)
-	TickersDF.reset_index(drop = True, inplace = True)
+	TickersDF['Last Sale'] = TickersDF['Last Sale'].apply(dollarSign)
 
 	#find the numbers that the user wants for each approved ticker
 	ValueScore = enterScore('Value')
