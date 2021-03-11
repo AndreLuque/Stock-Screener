@@ -340,5 +340,5 @@ def value(PE:float, PEG:float, PS:float, PB:float, YearHighPercent:float, EBITDA
 
 	#2 stage discounted cash flow
 
-	return pointsEarnedValue, TotalpointsValue, GoldenRatio
+	return pointsEarnedValue, TotalpointsValue
 
